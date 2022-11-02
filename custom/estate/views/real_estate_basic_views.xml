@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<odoo>
+  <record id="real_estate_record_view_tree" model="ir.ui.view">
+    <field name="name">real.estate.record.view.tree</field>
+    <field name="model">real.estate</field>
+    <field name="arch" type="xml">
+      <tree string="Real Estate" decoration-success="state=='offer recieved' or state=='offer accepted'" decoration-bf="state == 'offer accepted'" decoration-muted="state == 'sold'">
+        <field name="id"/>
+        <field name="create_date"/>
+        <field name="create_uid"/>
+        <field name="name"/>
+        <field name="postcode"/>
+        <field name="bedrooms"/>
+        <field name="living_areas"/>
+        <field name="expected_price"/>
+        <field name="selling_price"/>
+        <field name="date_availability" optional="hidden"/>
+        <field name="type_id"/>
+        <field name="tag_ids" widget="many2many_tags"/>
+        <field name="offer_ids"/>
+        <field name="state" optional="hidden"/>
+      </tree>
+    </field>
+  </record>
+</odoo>
