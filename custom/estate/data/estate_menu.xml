@@ -4,8 +4,8 @@
     <menuitem id="test_first_level" name="Advertisement">
       <menuitem id="test_menu_action" action="real_estate_record"/>
     </menuitem>
-    <menuitem id="type_primary_level" name="Setting">
-      <menuitem id="type_sub_menu" action="real_estate_record_type"/>
+    <menuitem id="primary_setting" name="Settings">
+      <menuitem id="property_types" action="real_estate_type_record"/>
       <menuitem id="tag_sub_menu" action="real_estate_tag"/>
     </menuitem>
   </menuitem>

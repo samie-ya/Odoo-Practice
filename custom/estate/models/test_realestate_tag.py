@@ -11,6 +11,4 @@ class RealEstateTag(models.Model):
   name = fields.Char(required=True)
   color = fields.Integer()
 
-
-
   _sql_constraints = [('check_unique_name', 'UNIQUE(name)', 'Name of the tag should be unique')]
