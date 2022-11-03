@@ -1,6 +1,7 @@
 """This fine will craete the models for the realestate"""
 
-from odoo import api,models,fields
+from odoo import api,models,fields, _
+from odoo.exceptions import UserError
 from datetime import datetime, timedelta
 
 class RealEstateOffers(models.Model):
@@ -17,6 +18,19 @@ class RealEstateOffers(models.Model):
   property_type_id = fields.Many2one(related="property_id.type_id", store=True)
 
   _sql_constraints = [('check_offer_price', 'CHECK(price > 0)', 'The offer price must be strictly positive')]
+
+  @api.model
+  def create(self, vals):
+    """This will make modifications to state when offer is created"""
+    property = self.env['real.estate'].browse(vals['property_id'])
+    all_prices = property.offer_ids.mapped('price')
+    prices = sorted(all_prices)
+    highest = prices[-1]
+    if highest > vals['price']:
+      raise UserError(_('Every offer must be greater than what is already given'))
+    else:
+      property.state = 'offer received'
+      return super(RealEstateOffers, self).create(vals)
 
   def offer_confirm(self):
     """This function will confirm an offer"""

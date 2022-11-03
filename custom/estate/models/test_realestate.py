@@ -39,11 +39,19 @@ class RealEstate(models.Model):
                       ('check_selling_price', 'CHECK(selling_price >= 0)', 'Selling Price must be Positive')
                      ]
 
+  def unlink(self):
+    """This function will delete only new and cancelled records"""
+    for record in self:
+      if record.state == 'new' or record.state == 'cancelled':
+        return super(RealEstate, self).unlink()
+      else:
+        raise UserError(_('You can not delete a record that is not new nor cancelled'))
+
   @api.constrains('expected_price')
   def _contrain_selling_price(self):
     """This function will create a constrain on the selling price"""
     for record in self:
-      if record.selling_price >= 0:
+      if record.selling_price > 0:
         price = record.expected_price * 0.9
         compare = float_compare(record.selling_price, price, precision_digits=2)
         if compare == -1:

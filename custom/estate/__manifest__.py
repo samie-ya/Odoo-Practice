@@ -22,8 +22,9 @@
     'views/type_basic_views.xml',
     'views/tag_basic_views.xml',
     'views/offer_basic_form.xml',
-    'views/offer_basic_views.xml'
-  ],
+    'views/offer_basic_views.xml',
+    'views/inherit_basic_views.xml' 
+ ],
   'category': 'Category',
   'application': True,
   'installable': True,
