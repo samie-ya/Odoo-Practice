@@ -19,18 +19,22 @@ class RealEstateOffers(models.Model):
 
   _sql_constraints = [('check_offer_price', 'CHECK(price > 0)', 'The offer price must be strictly positive')]
 
+
   @api.model
   def create(self, vals):
-    """This will make modifications to state when offer is created"""
+    """This function will make modificatiosn to created of offer"""
     property = self.env['real.estate'].browse(vals['property_id'])
-    all_prices = property.offer_ids.mapped('price')
-    prices = sorted(all_prices)
-    highest = prices[-1]
-    if highest > vals['price']:
-      raise UserError(_('Every offer must be greater than what is already given'))
+    price_lists = property.offer_ids.mapped('price')
+    if price_lists != []:
+      least_offer = sorted(price_lists)
+      if vals['price'] <= least_offer[0]:
+        raise UserError(_('You can not create an offer that is lower than the prices given.'))
+      else:
+        property.state = 'offer received'
     else:
       property.state = 'offer received'
-      return super(RealEstateOffers, self).create(vals)
+    return super(models.Model, self).create(vals)
+
 
   def offer_confirm(self):
     """This function will confirm an offer"""
@@ -43,8 +47,6 @@ class RealEstateOffers(models.Model):
   def offer_cancel(self):
     """This function will cancel an offer"""
     for record in self:
-      record.property_id.selling_price = ''
-      record.property_id.buyer = ''
       record.status = 'rejected'
 
   def _inverse_deadline(self):
@@ -54,7 +56,7 @@ class RealEstateOffers(models.Model):
         days = (record.date_deadline - record.create_date).days
         record.validity = int(days)
 
-  @api.depends('validity')
+  @api.depends('validity', 'create_date')
   def _compute_deadline(self):
     """This function will compute the deadline for an offer"""
     for record in self:

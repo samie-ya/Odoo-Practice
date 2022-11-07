@@ -10,9 +10,8 @@ class RealEstateAccount(models.Model):
   def sold_or_not_sold(self):
     invoice_cut_offs = (self.selling_price * 0.06) + 100.00
     journal = self.env['account.journal'].search([('type', '=', 'sale')])
-    self.env['account.move'].create({
+    self.env['account.move'].with_context(default_move_type='out_invoice').create({
       'partner_id': self.buyer.id,
-      'move_type': 'out_invoice',
       'journal_id': journal.id,
       'invoice_line_ids': [
         (

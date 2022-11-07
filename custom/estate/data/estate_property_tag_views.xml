@@ -3,6 +3,5 @@
   <record id="real_estate_tag" model="ir.actions.act_window">
     <field name="name">Property Tags</field>
     <field name="res_model">real.estate.tag</field>
-    <field name="view_mode">tree,form</field>
   </record>
 </odoo>

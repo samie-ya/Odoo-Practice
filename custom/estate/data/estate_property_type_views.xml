@@ -3,6 +3,5 @@
   <record id="real_estate_type_record" model="ir.actions.act_window">
     <field name="name">Property Type</field>
     <field name="res_model">real.estate.type</field>
-    <field name="view_mode">tree,form</field>
   </record>
 </odoo>

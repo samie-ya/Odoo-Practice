@@ -27,10 +27,10 @@ class RealEstate(models.Model):
   active = fields.Boolean('Active', default=True)
   type_id = fields.Many2one('real.estate.type', string="Property Type")
   seller = fields.Many2one('res.users', string="Seller", default=lambda self: self.env.user)
-  buyer = fields.Many2one('res.partner', copy=False, string="Buyer")
+  buyer = fields.Many2one('res.partner', copy=False, string="Buyer", readonly=True)
   tag_ids = fields.Many2many('real.estate.tag', string="Tags")
   offer_ids = fields.One2many('real.estate.offers', 'property_id')
-  state = fields.Selection(string="State", selection=[('new', 'New'), ('offer received', 'Offer Received'), ('offer accepted', 'Offer Accepted'), ('sold', 'Sold'), ('cancelled', 'Cancelled')], required=True, copy=False, default='new')
+  state = fields.Selection([('new', 'New'), ('offer received', 'Offer Received'), ('offer accepted', 'Offer Accepted'), ('sold', 'Sold'), ('cancelled', 'Cancelled'),], 'State', default='new', required=True, copy=False)
   total_area = fields.Integer(compute='_compute_total_area')
   best_price = fields.Float(compute='_compute_best_price')
 
@@ -47,7 +47,7 @@ class RealEstate(models.Model):
       else:
         raise UserError(_('You can not delete a record that is not new nor cancelled'))
 
-  @api.constrains('expected_price')
+  @api.constrains('selling_price')
   def _contrain_selling_price(self):
     """This function will create a constrain on the selling price"""
     for record in self:
@@ -80,15 +80,14 @@ class RealEstate(models.Model):
   @api.onchange('garden')
   def _change_based_on_garden(self):
     """This function will toggle fields based on garden"""
-    for record in self:
-      if record.garden:
-        record.garden_area = 10
-        record.garden_orientation = 'north'
-      else:
-        record.garden_area = 0
-        record.garden_orientation = ''
+    if self.garden:
+        self.garden_area = 10
+        self.garden_orientation = 'north'
+    else:
+        self.garden_area = 0
+        self.garden_orientation = ''
 
-  @api.depends('offer_ids')
+  @api.depends('offer_ids.price')
   def _compute_best_price(self):
     """This function will compute the best price form offers"""
     for record in self:
@@ -97,7 +96,7 @@ class RealEstate(models.Model):
         highest = sorted(price)
         record.best_price = highest[-1]
       else:
-        record.best_price = 0
+        record.best_price = 0.0
   
   @api.depends('garden_area', 'living_areas')
   def _compute_total_area(self):
